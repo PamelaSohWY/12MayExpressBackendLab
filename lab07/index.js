@@ -87,6 +87,54 @@ let response = await axios.post(baseUrl + "/pet", newPet);
 
 })
 
+//UPDATE in CRUD 
+
+// part 1
+//display the form that shows existing pet information 
+app.get('/pet/:petId/update', async function(req,res) {
+    //1.fetch the existing pet information the database 
+    let petID = req.params.petId;
+    let response = await axios.get(baseUrl +'/pet/' + petID);
+
+//populate the form with existing pet's information
+res.render ('edit_pet', {
+    'pet': response.data
+})
+})
+
+//update the pet (ie process the form)
+app.post('/pet/:petID/update', async function(req,res){
+    let petID = req.params.petID;
+    //fetch the existing pet information
+    let response = await axios.get(baseUrl + '/pet/' + req.params.petID);
+    let oldPet = response.data; 
+
+    //fetch the new petName and the new petCategory 
+    let newPetName = req.body.petName;
+    let newPetCategory = req.body.petCategory;
+
+    let newPet ={
+        "id" : req.params.petID, 
+        "category":{
+            "id": oldPet.category.id, 
+            "name": newPetCategory 
+        }, 
+        "name": newPetName,
+        "photoUrls": [
+          "n/a"
+        ],
+        "tags": [
+        ],
+        "status": "available"
+    }
+
+response = await axios.put(baseUrl + '/pet', newPet);
+      // go to the /pets URL
+      res.redirect('/pets')
+})
+
+//DELETE IN CRUD
+
 
 
 // 3. START SERVER
