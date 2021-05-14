@@ -1,0 +1,38 @@
+{{#extends 'base'}}
+{{#block "content"}}
+
+{{!--create table that corresponds with data in json : 'https://petstore.swagger.io/v2/pet/findByStatus?status=pending' --}}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Tags</th>
+            <th>Status</th>
+            
+        </tr>
+    </thead>
+
+     <tbody>
+        {{#each allPets}}
+        <tr>
+            <td>{{this.id}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.category.name}}</td>
+            <td>
+                {{#each this.tags}}
+                <span class="badge badge-primary">{{this.name}}</span>
+                {{/each}}
+            </td>
+            <td>{{this.status}}</td>
+        </tr>
+        {{/each}}
+
+    </tbody>
+</table>
+
+
+{{/block}}
+{{/extends}}
