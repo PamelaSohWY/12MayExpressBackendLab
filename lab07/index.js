@@ -134,7 +134,23 @@ response = await axios.put(baseUrl + '/pet', newPet);
 })
 
 //DELETE IN CRUD
+//display a confirmation form 
+app.get('/pet/:petID/delete', async function(req,res){
+    let petID=req.params.petID;
+    let response= await axios.get(baseUrl + '/pet/' + petID);
+    console.log(response);
+    let pet = response.data; 
+    res.render('delete_pet',{
+        'pet': pet
+    })
+})
 
+//process the delete 
+app.post('/pet/:petID/delete', async function(re,res){
+    let petID = req.params.petID;
+    let response = await axios.delete(baseUrl + '/pet/' + perID);
+    res.redirect('/pets')
+})
 
 
 // 3. START SERVER
