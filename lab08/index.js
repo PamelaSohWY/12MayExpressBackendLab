@@ -199,6 +199,87 @@ app.post('/food/:foodid/delete', async(req,res) =>{
 }
 )
 
+//render form to allow the user to add note 
+app.get('/food/:foodid/notes/add', async(req,res)=>{
+    let db = MongoUtil.getDB();
+    let foodRecord = await getFoodById(req.params.foodid)
+
+
+        res.render('add_note', {
+            'food': foodRecord 
+        })
+    })
+
+
+app.post('/food/:foodid/notes/add', async(req,res)=>{
+   let db = MongoUtil.getDB();
+   let noteContent = req.body.content;
+   await db.collection('food').updateOne({
+       '_id': ObjectId(req.params.foodid)
+   },{
+       '$push':{
+           'notes':{
+               '_id':ObjectId(),
+               'content': noteContent
+           }
+       }
+
+   })
+   res.redirect('/food')
+
+})
+
+//see the notes and details of a food document 
+app.get('/food/foodid', async (req,res)=>{
+    let db = MongoUtil.getDB();
+    let foodRecord = await getFoodById(req.params.foodid);
+    res.render('food_details', {
+        'food': foodRecord
+    })
+})
+
+//display the form to update a note 
+app.get('/notes/:noteid/edit', async(req,res)=>{
+    let db = MongoUtil.getDB();
+    let foodRecord = await db.collection('food').findOne({
+        'notes._id':ObjectId(req.params.noteid)
+    },{
+        'projection':{
+            'notes':{
+                '$elemMatch':{
+                    '_id':ObjectId(req.params.noteid)
+                }
+            }
+        }
+    })
+
+    let noteToEdit = foodRocord.notes[0];
+    res.render('edit_note', {
+        'note': noteToEdit
+    })
+})
+
+app.post('/notes/:noteid/edit', async(req,res)=>{
+    let db = MongoUtil.getDB();
+
+    let foodRecord = await db.collection('food').findOne({
+        'notes._id':ObjectId(req.params.noteid)
+    });
+
+    await db.collection('food').updateOne({
+    'notes._id':ObjectId(req.params.noteid)
+    },{
+        '$set':{
+            'notes.$.content':req.body.content
+        }
+
+    })
+    
+    res.redirect('/food/' +foodRecord._id);
+
+})
+
+
 // 7. start the server
 app.listen(3000, ()=>{
     console.log("Server has started")
