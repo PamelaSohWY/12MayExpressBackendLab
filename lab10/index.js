@@ -60,7 +60,7 @@ app.post('/free_food_sighting', async(req,res)=>{
 
     })
     //insert data in 
-
+ console.log(1)
 })
 
 main()
